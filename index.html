@@ -623,5 +623,46 @@
             renderCurrentView(); 
         };
     </script>
+    
+    <div id="display-area" style="padding: 20px; font-family: sans-serif;">
+    <h3>ข้อมูลล่าสุดจากระบบ:</h3>
+    <div id="my-data-list">กำลังโหลดข้อมูล...</div>
+</div>
+
+<script>
+    // เปลี่ยน ลิงก์ด้านล่างนี้ เป็นลิงก์ CSV ที่คุณคัดลอกมา
+    const googleSheetCSV = 'วาง_ลิงก์_CSV_ของคุณ_ตรงนี้';
+
+    async function showMyData() {
+        try {
+            const response = await fetch(googleSheetCSV);
+            const data = await response.text();
+            
+            // แยกข้อมูลเป็นบรรทัด
+            const rows = data.split('\n');
+            let htmlContent = '';
+
+            // วนลูปสร้างรายการ (เริ่มที่ 1 เพื่อข้ามหัวตาราง)
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i].trim() !== '') {
+                    const columns = rows[i].split(',');
+                    // แสดงข้อมูลคอลัมน์ที่ 1 และ 2 (ปรับตัวเลขได้ตามต้องการ)
+                    htmlContent += `
+                        <div style="background: #f4f4f4; padding: 10px; margin-bottom: 5px; border-radius: 5px;">
+                            <b>รายการที่ ${i}:</b> ${columns[0]} | ${columns[1] || ''}
+                        </div>`;
+                }
+            }
+
+            document.getElementById('my-data-list').innerHTML = htmlContent;
+        } catch (error) {
+            document.getElementById('my-data-list').innerHTML = 'โหลดข้อมูลไม่สำเร็จ กรุณาเช็คการตั้งค่าแชร์ใน Sheet';
+        }
+    }
+
+    // สั่งให้ทำงานทันที
+    showMyData();
+</script>
 </body>
 </html>
+
