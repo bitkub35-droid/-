@@ -13,27 +13,13 @@
             --tong-red: #dc2626;
             --tong-dark: #111827;
         }
-        /* Background Color */
         body { 
             font-family: 'Kanit', sans-serif; 
-             /*background-color: #220a0a; 
-            background: linear-gradient(135deg, #080404 0%,#6b1414 50%, #520c0c 75%, #0e0303 100%);           
-            background: linear-gradient(135deg, #0f0505 0%, #4a0a0a 45%, #2b0606 75%, #080404 100%);*/
-             background: linear-gradient(180deg, #1a0505 10%, #000000 100%);
+            background: linear-gradient(180deg, #1a0505 10%, #000000 100%);
             color: #1f2937;
+            min-height: 100vh;
         }
-
-        /*body {
-            font-family: 'Kanit', sans-serif;
-             ไล่จากสีม่วงเข้มไปทางแดงเข้ม ให้ความรู้สึกหรูหรา 
-            background: linear-gradient(135deg, #080404 0%, #4a0e0e 100%);
-            color: #ffffff; /* เปลี่ยนสีตัวอักษรเป็นสีขาวเพื่อให้มองเห็นชัดบนพื้นหลังเข้ม 
-            min-height: 100-vh;
-            margin: 0;
-    }*/
-
         .heading-font { font-family: 'Chakra Petch', sans-serif; }
-
         .btn-red {
             background-color: var(--tong-red);
             color: white;
@@ -43,13 +29,11 @@
             background-color: #b91c1c;
             transform: translateY(-1px);
         }
-
         .header-sticky {
             position: sticky;
             top: 0;
             z-index: 50;
         }
-
         .bike-card {
             transition: all 0.3s ease;
         }
@@ -57,7 +41,6 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
-
         .image-upload-box {
             border: 2px dashed #d1d5db;
             transition: all 0.3s ease;
@@ -67,21 +50,22 @@
             border-color: var(--tong-red);
             background-color: #fef2f2;
         }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
             #receipt-template { display: block !important; width: 100%; position: absolute; top: 0; left: 0; }
+            .print-border { border: 1px solid black !important; }
+        }
+        .sync-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="min-h-screen pb-10">
+<body class="pb-10">
 
     <!-- Header & Dashboard -->
     <div class="no-print header-sticky">
@@ -92,18 +76,20 @@
                         <i class="fas fa-motorcycle text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-black heading-font italic leading-none uppercase tracking-tighter">Tong Motor</h1>
-                        <p class="text-[9px] text-red-500 font-bold uppercase tracking-widest">ระบบหลังบ้านตงมอเตอร์</p>
+                        <h1 class="text-xl font-black heading-font italic leading-none uppercase tracking-tighter">ตง มอเตอร์</h1>
+                        <p class="text-[9px] text-red-500 font-bold uppercase tracking-widest">ตงมอเตอร์ รถจักรยานยนต์มือสองเกรดเอ</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <div id="syncStatus" class="hidden mr-2">
+                        <i class="fas fa-sync sync-spinner text-yellow-400 text-xs"></i>
+                    </div>
+                    <button onclick="toggleModal('settingsModal')" title="เชื่อมต่อ Google Sheets" class="bg-gray-800 text-gray-400 p-2 rounded-lg hover:text-white transition border border-gray-700">
+                        <i class="fas fa-cog"></i>
+                    </button>
                     <button id="viewToggleBtn" onclick="toggleView()" class="bg-gray-800 text-yellow-400 font-bold px-3 py-2 rounded-xl text-xs flex items-center border border-yellow-400/30 hover:bg-gray-700 transition">
                         <i id="viewIcon" class="fas fa-table mr-2"></i>
                         <span id="viewLabel">สลับโหมดตาราง</span>
-                    </button>
-                    
-                    <button onclick="exportData()" title="สำรองข้อมูล" class="bg-gray-800 text-gray-400 p-2 rounded-lg hover:text-white transition border border-gray-700">
-                        <i class="fas fa-cloud-download-alt"></i>
                     </button>
                     <button onclick="toggleModal('addModal')" class="btn-red px-5 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center">
                         <i class="fas fa-plus-circle mr-2"></i> เพิ่มรถเข้าใหม่
@@ -117,19 +103,19 @@
             <div class="container mx-auto px-4 py-3">
                 <div class="grid grid-cols-4 gap-4">
                     <div class="text-center md:text-left border-r border-gray-100 last:border-0">
-                        <p class="text-[10px] text-gray-800 font-bold uppercase">รถในสต็อก</p>
+                        <p class="text-[10px] text-gray-800 font-bold uppercase tracking-tighter">รถในสต็อก</p>
                         <h3 id="stat-total" class="text-2xl font-black heading-font tracking-tight">0</h3>
                     </div>
                     <div class="text-center md:text-left border-r border-gray-100 last:border-0">
-                        <p class="text-[10px] text-gray-800 font-bold uppercase">ปิดการขาย</p>
+                        <p class="text-[10px] text-gray-800 font-bold uppercase tracking-tighter">ขายแล้ว</p>
                         <h3 id="stat-sold" class="text-2xl font-black heading-font text-green-600 tracking-tight">0</h3>
                     </div>
                     <div class="text-center md:text-left border-r border-gray-100 last:border-0">
-                        <p class="text-[10px] text-gray-800 font-bold uppercase">รอเอกสาร</p>
+                        <p class="text-[10px] text-gray-800 font-bold uppercase tracking-tighter">รอเอกสาร</p>
                         <h3 id="stat-docs" class="text-2xl font-black heading-font text-yellow-600 tracking-tight">0</h3>
                     </div>
                     <div class="text-center md:text-left">
-                        <p class="text-[10px] text-red-800 font-bold uppercase">กำไรรวมทั้งหมด</p>
+                        <p class="text-[10px] text-red-800 font-bold uppercase tracking-tighter">กำไรรวม</p>
                         <h3 id="stat-profit" class="text-2xl font-black heading-font tracking-tighter italic text-red-700">฿0</h3>
                     </div>
                 </div>
@@ -137,36 +123,34 @@
         </div>
     </div>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="container mx-auto px-4 mt-6 no-print">
         <div class="flex flex-col md:flex-row gap-3 mb-6">
             <div class="relative flex-grow">
-                <input type="text" id="searchInput" onkeyup="renderCurrentView()" placeholder="ค้นหารุ่นรถ, ทะเบียน, หรือชื่อลูกค้า..." 
+                <input type="text" id="searchInput" onkeyup="renderCurrentView()" placeholder="ค้นหารุ่นรถ, ทะเบียน..." 
                     class="w-full pl-11 pr-4 py-3 bg-white border rounded-2xl shadow-sm focus:ring-2 focus:ring-red-500 outline-none transition-all">
                 <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
             </div>
             <select id="filterStatus" onchange="renderCurrentView()" class="bg-white px-4 py-2 rounded-2xl shadow-sm font-bold text-gray-700 border outline-none cursor-pointer">
-                <option value="all">แสดงรถทั้งหมด</option>
-                <option value="available">พร้อมขาย</option>
-                <option value="sold">ขายแล้ว</option>
+                <option value="all">สถานะ: ทั้งหมด</option>
+                <option value="available">สถานะ: พร้อมขาย</option>
+                <option value="sold">สถานะ: ขายแล้ว</option>
             </select>
         </div>
 
         <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-
         <div id="tableView" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-gray-900 text-white text-[10px] uppercase tracking-wider font-bold">
                         <tr>
-                            <th class="p-10">           รูป</th>
-                            <th class="p-10">ยี่ห้อ/รุ่น</th>
-                            <th class="p-8">ทะเบียน</th>
-                            <th class="p-8 text-right">ทุน</th>
-                            <th class="p-8 text-right">ขาย</th>
-                            <th class="p-8 text-right">กำไร</th>
+                            <th class="p-4">รูป</th>
+                            <th class="p-4">ยี่ห้อ/รุ่น</th>
+                            <th class="p-4">ทะเบียน</th>
+                            <th class="p-4 text-center">รับเข้า</th>
                             <th class="p-4 text-center">เอกสาร</th>
-                            <th class="p-4 text-center">สถานะ</th>
+                            <th class="p-4 text-right">ทุน</th>
+                            <th class="p-4 text-right">ขาย</th>
                             <th class="p-4 text-center">จัดการ</th>
                         </tr>
                     </thead>
@@ -176,221 +160,247 @@
         </div>
     </main>
 
+    <!-- Modal: Settings -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[110] flex items-center justify-center p-4 no-print">
+        <div class="bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-8 border-t-8 border-red-600">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold heading-font italic">เชื่อมต่อ Cloud Sync</h2>
+                <button onclick="toggleModal('settingsModal')" class="text-gray-400 hover:text-black text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="scriptUrl" placeholder="Google Apps Script URL" 
+                    class="w-full p-4 bg-gray-50 border rounded-2xl outline-none text-sm focus:border-red-500">
+                <button onclick="saveSettings()" class="w-full btn-red py-4 rounded-2xl font-bold uppercase shadow-lg">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Add/Edit -->
     <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[100] flex items-center justify-center p-4 no-print">
         <div class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
             <div class="p-6 bg-gray-900 text-white flex justify-between items-center border-b-4 border-red-600">
-                <h2 id="modalTitle" class="text-xl font-bold heading-font italic">บันทึกข้อมูลรถ ตงมอเตอร์</h2>
+                <h2 id="modalTitle" class="text-xl font-bold heading-font italic uppercase">ข้อมูลรถและเอกสาร</h2>
                 <button onclick="toggleModal('addModal')" class="bg-gray-800 text-gray-400 hover:text-white w-10 h-10 rounded-full flex items-center justify-center transition">&times;</button>
             </div>
-            
             <div class="p-8 overflow-y-auto">
                 <form id="bikeForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input type="hidden" id="editIndex">
-                    
+                    <input type="hidden" id="editId">
                     <div class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-gray-400 mb-2 uppercase">รูปภาพรถ</label>
-                        <div onclick="document.getElementById('fileInput').click()" class="image-upload-box rounded-3xl h-48 flex flex-col items-center justify-center overflow-hidden relative group">
+                        <div onclick="document.getElementById('fileInput').click()" class="image-upload-box rounded-3xl h-48 flex flex-col items-center justify-center overflow-hidden relative">
                             <img id="imagePreview" src="" class="hidden w-full h-full object-cover">
-                            <div id="uploadPlaceholder" class="text-center group-hover:scale-110 transition">
+                            <div id="uploadPlaceholder" class="text-center">
                                 <i class="fas fa-camera text-4xl text-gray-300 mb-2"></i>
-                                <p class="text-[10px] text-gray-400 uppercase font-bold">เพิ่มรูปถ่ายรถ</p>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">อัปโหลดรูปภาพ</p>
                             </div>
                             <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="previewImage(this)">
                             <textarea id="base64Store" class="hidden"></textarea>
                         </div>
                     </div>
-
                     <div class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">ยี่ห้อ / รุ่นรถ</label>
-                        <input type="text" id="model" required placeholder="เช่น Honda Forza 350" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-red-500 transition-all font-bold">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">ทะเบียน</label>
-                        <input type="text" id="plate" placeholder="1กข 1234 กทม" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-red-500">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">ยี่ห้อ / รุ่น</label>
+                        <input type="text" id="model" required class="w-full p-4 bg-gray-50 border rounded-2xl outline-none focus:border-red-500 font-bold">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">วันที่ซื้อเข้า</label>
-                        <input type="date" id="buyDate" required class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">ทะเบียน</label>
+                        <input type="text" id="plate" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">ราคาทุน</label>
-                        <input type="number" id="costPrice" required placeholder="0" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none text-red-600 font-black text-lg">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">วันที่รับรถเข้า</label>
+                        <input type="date" id="receiveDate" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">ราคาขาย</label>
-                        <input type="number" id="salePrice" required placeholder="0" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none text-green-600 font-black text-lg">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">ต้นทุน</label>
+                        <input type="number" id="costPrice" required class="w-full p-4 bg-gray-50 border rounded-2xl text-red-600 font-black">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">เอกสารเล่มทะเบียน</label>
-                        <select id="docStatus" class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none font-bold">
-                            <option value="ครบ">เอกสารครบพร้อมโอน</option>
-                            <option value="รอเล่ม">รอเล่มทะเบียน</option>
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">ราคาขาย</label>
+                        <input type="number" id="salePrice" required class="w-full p-4 bg-gray-50 border rounded-2xl text-green-600 font-black">
+                    </div>
+                    
+                    <div class="md:col-span-1">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">สถานะเอกสาร</label>
+                        <select id="docStatus" class="w-full p-4 bg-blue-50 border border-blue-100 rounded-2xl outline-none text-blue-700 font-bold">
+                            <option value="ชุดโอนครบ">ชุดโอนครบ (พร้อมโอน)</option>
+                            <option value="รอเล่มทะเบียน">รอเล่มทะเบียน</option>
                             <option value="รอชุดโอน">รอชุดโอน</option>
-                            <option value="ขาดต่อ">ภาษีขาดต่อ</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">สถานะปัจจุบัน</label>
-                        <select id="status" onchange="toggleSaleFields()" class="w-full p-4 border-2 border-gray-200 rounded-2xl outline-none font-black text-red-600">
-                            <option value="available">พร้อมขาย (Available)</option>
-                            <option value="sold">ขายแล้ว (Sold Out)</option>
+                            <option value="แจ้งย้าย/โอนนอก">แจ้งย้าย/โอนนอก</option>
+                            <option value="เอกสารไม่ครบ">เอกสารไม่ครบ (รอติดตาม)</option>
+                            <option value="ไม่มีเล่ม">ไม่มีเล่ม (เฉพาะซาก/อะไหล่)</option>
                         </select>
                     </div>
 
-                    <!-- Sold Info Section -->
-                    <div id="soldFields" class="hidden md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 bg-red-50 p-6 rounded-3xl border-2 border-red-100">
-                        <div class="md:col-span-2 flex items-center mb-2">
-                            <i class="fas fa-handshake text-red-600 mr-2"></i>
-                            <h3 class="font-bold text-red-600 text-xs uppercase tracking-wider">ข้อมูลการปิดการขาย</h3>
-                        </div>
-                        <input type="text" id="customerName" placeholder="ชื่อลูกค้า" class="w-full p-4 bg-white border border-red-200 rounded-2xl outline-none">
-                        <input type="text" id="customerPhone" placeholder="เบอร์โทรติดต่อ" class="w-full p-4 bg-white border border-red-200 rounded-2xl outline-none">
-                        <input type="date" id="sellDate" class="w-full p-4 bg-white border border-red-200 rounded-2xl outline-none">
-                        <select id="paymentType" class="w-full p-4 bg-white border border-red-200 rounded-2xl outline-none font-bold">
+                    <div class="md:col-span-1">
+                        <label class="block text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-widest">สถานะการขาย</label>
+                        <select id="status" onchange="toggleSaleFields()" class="w-full p-4 border rounded-2xl font-black text-red-600">
+                            <option value="available">พร้อมขาย</option>
+                            <option value="sold">ขายแล้ว</option>
+                        </select>
+                    </div>
+
+                    <div id="soldFields" class="hidden md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-3xl border">
+                        <input type="text" id="customerName" placeholder="ชื่อลูกค้า" class="w-full p-4 bg-white border rounded-2xl outline-none">
+                        <input type="text" id="customerPhone" placeholder="เบอร์โทร" class="w-full p-4 bg-white border rounded-2xl outline-none">
+                        <input type="date" id="sellDate" class="w-full p-4 bg-white border rounded-2xl outline-none">
+                        <select id="paymentType" class="w-full p-4 bg-white border rounded-2xl outline-none font-bold">
                             <option value="เงินสด">เงินสด</option>
                             <option value="โอนเงิน">โอนเงิน</option>
-                            <option value="จัดไฟแนนซ์">จัดไฟแนนซ์</option>
-                            <option value="มัดจำ">วางมัดจำ</option>
+                            <option value="ไฟแนนซ์">ไฟแนนซ์</option>
                         </select>
+                        <div class="md:col-span-2">
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">จำนวนมัดจำ</label>
+                            <input type="number" id="depositAmount" placeholder="0" class="w-full p-4 bg-white border rounded-2xl outline-none text-blue-600 font-bold">
+                        </div>
                     </div>
-
+                    
                     <div class="md:col-span-2 pt-4">
-                        <button type="submit" class="w-full btn-red py-5 rounded-2xl font-black text-xl heading-font shadow-xl uppercase tracking-widest">บันทึกข้อมูลลงระบบ</button>
+                        <button type="submit" class="w-full btn-red py-5 rounded-2xl font-black text-xl heading-font shadow-xl uppercase">บันทึกข้อมูล</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Receipt Template (Hidden) -->
-    <div id="receipt-template" class="hidden p-8 bg-white text-black min-h-screen">
-        <div class="max-w-[800px] mx-auto border-8 border-double border-black p-8 relative">
-            <div class="text-center mb-10">
-                <h1 class="text-5xl font-black heading-font italic uppercase tracking-tighter mb-2">TONG MOTOR</h1>
-                <p class="text-lg font-bold">ตงมอเตอร์ รถจักรยานยนต์มือสองเกรดเอ</p>
-                <div class="h-1 bg-red-600 w-48 mx-auto my-4"></div>
-                <p class="text-xs">เลขที่ 13 ถนนวิฑูรอุทิศ1 ตำบลสะเตง อำเภอเมืองยะลา ยะลา 95000</p>
-                <p class="text-xs">โทร: 081-959-9480 | Line: @tongmotor</p>
-            </div>
-
-            <div class="flex justify-between items-end border-b-2 border-black pb-4 mb-8">
+    <!-- Receipt Template -->
+    <div id="receipt-template" class="hidden p-4 md:p-12 bg-white text-black min-h-screen">
+        <div class="max-w-[850px] mx-auto bg-white p-8 border border-gray-200">
+            <div class="flex justify-between items-start border-b-2 border-black pb-6 mb-8">
                 <div>
-                    <h2 class="text-2xl font-bold uppercase underline">ใบเสร็จรับเงิน / สัญญาซื้อขาย</h2>
-                    <p class="mt-2 text-sm">เลขที่เอกสาร: <span id="r-id" class="font-bold"></span></p>
+                    <h1 class="text-4xl font-black heading-font italic text-red-600 tracking-tighter">ตง มอเตอร์</h1>
+                    <p class="text-sm font-bold uppercase tracking-widest text-gray-500">ตงมอเตอร์ รถมือสองสภาพดี</p>
+                    <div class="mt-4 text-xs space-y-1">
+                        <p><i class="fas fa-location-dot mr-2"></i> เลขที่ 13 ถนนวิฑูรอุทิศ1 ตำบลสะเตง อำเภอเมืองยะลา ยะลา 95000</p>
+                        <p><i class="fas fa-phone mr-2"></i> โทร: 081-959-9480 </p>
+                        <p><i class="fas fa-globe mr-2"></i> facebook.com/ร้านซื้อ-ขายรถมอไซค์มือสองยะลา ตง มอเตอร์</p>
+                    </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-sm">วันที่ทำรายการ: <span id="r-date" class="font-bold"></span></p>
+                    <h2 class="text-2xl font-bold uppercase border-b-2 border-black mb-2 pb-1">ใบเสร็จรับเงิน / สัญญาจอง</h2>
+                    <p class="text-sm">เลขที่: <span id="r-id" class="font-bold"></span></p>
+                    <p class="text-sm">วันที่: <span id="r-date" class="font-bold"></span></p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-10 mb-10">
-                <div class="border p-4 rounded-lg bg-gray-50">
-                    <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">ข้อมูลผู้ซื้อ</p>
-                    <p class="text-xl font-bold" id="r-customer"></p>
-                    <p class="text-sm text-gray-700" id="r-phone"></p>
+            <div class="grid grid-cols-2 gap-8 mb-8">
+                <div class="space-y-3">
+                    <h3 class="text-xs font-black uppercase tracking-widest bg-black text-white px-2 py-1 inline-block">ข้อมูลผู้ซื้อ / Customer</h3>
+                    <div class="text-sm border-l-4 border-gray-200 pl-4 space-y-1">
+                        <p>ชื่อ-นามสกุล: <span id="r-customer" class="font-bold border-b border-dotted border-gray-400 min-w-[150px] inline-block"></span></p>
+                        <p>เบอร์โทรศัพท์: <span id="r-phone" class="font-bold border-b border-dotted border-gray-400 min-w-[150px] inline-block"></span></p>
+                    </div>
                 </div>
-                <div class="text-right">
-                    <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">ยอดชำระทั้งสิ้น</p>
-                    <p class="text-5xl font-black text-red-600 italic">฿<span id="r-price"></span></p>
-                    <p class="text-[10px] text-gray-400 mt-1 italic" id="r-payment"></p>
+                <div class="space-y-3">
+                    <h3 class="text-xs font-black uppercase tracking-widest bg-black text-white px-2 py-1 inline-block">รายละเอียดรถ / Vehicle</h3>
+                    <div class="text-sm border-l-4 border-gray-200 pl-4 space-y-1">
+                        <p>ยี่ห้อ/รุ่น: <span id="r-model" class="font-bold uppercase"></span></p>
+                        <p>ทะเบียน: <span id="r-plate" class="font-bold text-red-600"></span></p>
+                        <p>สถานะเอกสาร: <span id="r-docs" class="font-bold text-blue-700"></span></p>
+                    </div>
                 </div>
             </div>
 
-            <table class="w-full mb-12 border-collapse">
+            <table class="w-full mb-10 border-collapse">
                 <thead>
-                    <tr class="bg-black text-white">
-                        <th class="p-3 text-left">รายละเอียดรายการ</th>
-                        <th class="p-3 text-center">หมายเลขทะเบียน</th>
-                        <th class="p-3 text-right">จำนวนเงิน</th>
+                    <tr class="border-y-2 border-black bg-gray-50">
+                        <th class="py-3 text-left pl-4 text-xs font-bold uppercase">รายการ / Description</th>
+                        <th class="py-3 text-right pr-4 text-xs font-bold uppercase">จำนวนเงิน (บาท) / Amount</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
                     <tr>
-                        <td class="p-5 border-b border-black">
-                            <p class="font-black text-xl italic uppercase" id="r-model"></p>
-                            <p class="text-xs text-gray-500 mt-1">รับประกันเครื่องยนต์และระบบไฟฟ้า 1 เดือน</p>
-                        </td>
-                        <td class="p-5 border-b border-black text-center font-bold text-lg" id="r-plate"></td>
-                        <td class="p-5 border-b border-black text-right font-black text-xl">฿<span id="r-total"></span></td>
+                        <td class="py-4 pl-4 text-sm font-medium">ราคารถจักรยานยนต์รวมสุทธิ (Net Price)</td>
+                        <td class="py-4 pr-4 text-right font-bold text-lg">฿<span id="r-price"></span></td>
+                    </tr>
+                    <tr id="r-deposit-row" class="text-blue-600">
+                        <td class="py-4 pl-4 text-sm font-medium">หัก: เงินมัดจำ / เงินจอง (Deposit)</td>
+                        <td class="py-4 pr-4 text-right font-bold">- ฿<span id="r-deposit"></span></td>
+                    </tr>
+                    <tr class="bg-gray-900 text-white">
+                        <td class="py-4 pl-4 text-sm font-black uppercase">คงเหลือที่ต้องชำระ (Balance Due)</td>
+                        <td class="py-4 pr-4 text-right font-black text-2xl">฿<span id="r-balance"></span></td>
                     </tr>
                 </tbody>
             </table>
 
-            <div class="grid grid-cols-2 gap-20 mt-20">
-                <div class="text-center">
-                    <div class="w-full border-b-2 border-black mb-4 h-10"></div>
-                    <p class="font-bold">ลงชื่อ ............................................................</p>
-                    <p class="text-xs uppercase mt-1">ผู้ซื้อ (Buyer)</p>
+            <div class="grid grid-cols-2 gap-10 mb-12">
+                <div class="text-[10px] text-gray-500 italic space-y-2">
+                    <p>* ข้าพเจ้าได้รับทราบและตกลงซื้อรถจักรยานยนต์คันดังกล่าวในสภาพปัจจุบัน</p>
+                    <p>* กรณีการจอง หากผู้ซื้อไม่มาดำเนินการภายใน 7 วัน ทางร้านขอสงวนสิทธิ์ในการยึดเงินมัดจำ</p>
+                    <p>* การชำระเงินผ่าน: <span id="r-payment" class="font-bold text-black uppercase"></span></p>
                 </div>
-                <div class="text-center">
-                    <div class="w-full border-b-2 border-black mb-4 h-10"></div>
-                    <p class="font-bold">ลงชื่อ ............................................................</p>
-                    <p class="text-xs uppercase mt-1 font-bold text-red-600">ผู้ขาย / ตงมอเตอร์ (Seller)</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center pt-8 border-t border-black">
+                        <p class="text-[10px] font-bold uppercase">ลงชื่อผู้ซื้อ</p>
+                    </div>
+                    <div class="text-center pt-8 border-t border-black">
+                        <p class="text-[10px] font-bold uppercase">ลงชื่อผู้รับเงิน</p>
+                    </div>
                 </div>
             </div>
-
-            <div class="mt-20 border-t pt-4 text-center">
-                <p class="text-[9px] text-gray-400 italic">ขอบคุณที่ไว้วางใจ ตงมอเตอร์ "รถดี มีคุณภาพ ราคายุติธรรม"</p>
+            
+            <div class="text-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.5em]">
+                Thank you for choosing Tong Motor
             </div>
         </div>
-        <div class="text-center mt-6 no-print">
-            <button onclick="window.print()" class="bg-black text-white px-10 py-4 rounded-full font-bold shadow-lg hover:scale-105 transition">พิมพ์เอกสาร (Print)</button>
-            <button onclick="location.reload()" class="ml-4 text-gray-500 font-bold hover:underline">กลับไปหน้าแรก</button>
+
+        <div class="flex justify-center gap-4 mt-12 no-print">
+            <button onclick="window.print()" class="bg-black text-white px-8 py-3 rounded-full font-bold shadow-lg flex items-center">
+                <i class="fas fa-print mr-2"></i> พิมพ์ใบเสร็จ
+            </button>
+            <button onclick="location.reload()" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-full font-bold hover:bg-gray-300">
+                <i class="fas fa-arrow-left mr-2"></i> ย้อนกลับ
+            </button>
         </div>
     </div>
 
     <script>
-        // Use versioning for storage
-        const DB_KEY = 'tong_motor_v3_premium';
+        const DB_KEY = 'tong_motor_v4';
+        const SETTINGS_KEY = 'tong_motor_settings';
+        
         let inventory = JSON.parse(localStorage.getItem(DB_KEY)) || [];
+        let settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || { scriptUrl: '' };
         let currentMode = 'grid';
+
+        function save() {
+            localStorage.setItem(DB_KEY, JSON.stringify(inventory));
+            updateStats();
+            renderCurrentView();
+            syncToCloud();
+        }
+
+        async function syncToCloud() {
+            if (!settings.scriptUrl) return;
+            document.getElementById('syncStatus').classList.remove('hidden');
+            try {
+                await fetch(settings.scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(inventory.map(i => ({...i, img: ''}))) });
+            } catch (e) {} finally { setTimeout(() => document.getElementById('syncStatus').classList.add('hidden'), 800); }
+        }
+
+        function saveSettings() {
+            settings.scriptUrl = document.getElementById('scriptUrl').value;
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            toggleModal('settingsModal');
+        }
 
         function previewImage(input) {
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const preview = document.getElementById('imagePreview');
-                    const placeholder = document.getElementById('uploadPlaceholder');
-                    const base64Store = document.getElementById('base64Store');
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                    base64Store.value = e.target.result;
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    document.getElementById('uploadPlaceholder').classList.add('hidden');
+                    document.getElementById('base64Store').value = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function toggleView() {
-            currentMode = currentMode === 'grid' ? 'table' : 'grid';
-            const grid = document.getElementById('gridView');
-            const table = document.getElementById('tableView');
-            const label = document.getElementById('viewLabel');
-            const icon = document.getElementById('viewIcon');
-
-            if(currentMode === 'table') {
-                grid.classList.add('hidden');
-                table.classList.remove('hidden');
-                label.innerText = 'สลับโหมดหน้าร้าน';
-                icon.className = 'fas fa-th-large mr-2';
-            } else {
-                grid.classList.remove('hidden');
-                table.classList.add('hidden');
-                label.innerText = 'สลับโหมดตาราง';
-                icon.className = 'fas fa-table mr-2';
-            }
-            renderCurrentView();
-        }
-
         function toggleModal(id) {
-            const m = document.getElementById(id);
-            m.classList.toggle('hidden');
-            if(m.classList.contains('hidden')) {
+            const modal = document.getElementById(id);
+            modal.classList.toggle('hidden');
+            if(id === 'addModal' && modal.classList.contains('hidden')) {
                 document.getElementById('bikeForm').reset();
-                document.getElementById('editIndex').value = '';
+                document.getElementById('editId').value = '';
                 document.getElementById('imagePreview').classList.add('hidden');
                 document.getElementById('uploadPlaceholder').classList.remove('hidden');
                 document.getElementById('base64Store').value = '';
@@ -399,66 +409,64 @@
         }
 
         function toggleSaleFields() {
-            const status = document.getElementById('status').value;
-            const fields = document.getElementById('soldFields');
-            status === 'sold' ? fields.classList.remove('hidden') : fields.classList.add('hidden');
+            const isSold = document.getElementById('status').value === 'sold';
+            document.getElementById('soldFields').classList.toggle('hidden', !isSold);
         }
 
         document.getElementById('bikeForm').onsubmit = function(e) {
             e.preventDefault();
-            const fallbackImg = 'https://images.unsplash.com/photo-1558981403-c5f91cbba527?auto=format&fit=crop&q=80&w=600';
-            const imgData = document.getElementById('base64Store').value || fallbackImg;
-
+            const editId = document.getElementById('editId').value;
+            
             const data = {
-                id: document.getElementById('editIndex').value !== '' 
-                    ? inventory[document.getElementById('editIndex').value].id 
-                    : 'TM-' + Date.now().toString().slice(-4),
+                id: editId !== '' ? editId : 'TM-' + Date.now().toString().slice(-6),
                 model: document.getElementById('model').value,
                 plate: document.getElementById('plate').value,
-                buyDate: document.getElementById('buyDate').value,
-                costPrice: parseFloat(document.getElementById('costPrice').value),
-                salePrice: parseFloat(document.getElementById('salePrice').value),
+                receiveDate: document.getElementById('receiveDate').value,
+                costPrice: parseFloat(document.getElementById('costPrice').value) || 0,
+                salePrice: parseFloat(document.getElementById('salePrice').value) || 0,
                 docStatus: document.getElementById('docStatus').value,
                 status: document.getElementById('status').value,
-                img: imgData,
+                img: document.getElementById('base64Store').value || 'https://images.unsplash.com/photo-1558981403-c5f91cbba527?w=400',
                 customerName: document.getElementById('customerName').value,
                 customerPhone: document.getElementById('customerPhone').value,
                 sellDate: document.getElementById('sellDate').value,
                 paymentType: document.getElementById('paymentType').value,
+                depositAmount: parseFloat(document.getElementById('depositAmount').value || 0)
             };
 
-            const idx = document.getElementById('editIndex').value;
-            if(idx !== '') inventory[idx] = data;
-            else inventory.unshift(data);
+            if(editId !== '') {
+                const index = inventory.findIndex(b => b.id === editId);
+                if(index !== -1) {
+                    if(!document.getElementById('base64Store').value && inventory[index].img) {
+                        data.img = inventory[index].img;
+                    }
+                    inventory[index] = data;
+                }
+            } else {
+                inventory.unshift(data);
+            }
             
             save();
             toggleModal('addModal');
         };
 
-        function deleteBike(index) {
-            if(confirm('🚨 ยืนยันการลบข้อมูลรถคันนี้ออกจากระบบ? (ไม่สามารถย้อนกลับได้)')) {
-                inventory.splice(index, 1);
-                save();
-            }
-        }
+        function editBikeById(id) {
+            const b = inventory.find(item => item.id === id);
+            if(!b) return;
 
-        function editBike(index) {
-            const b = inventory[index];
-            document.getElementById('editIndex').value = index;
+            document.getElementById('editId').value = b.id;
             document.getElementById('model').value = b.model;
             document.getElementById('plate').value = b.plate;
-            document.getElementById('buyDate').value = b.buyDate;
+            document.getElementById('receiveDate').value = b.receiveDate || '';
             document.getElementById('costPrice').value = b.costPrice;
             document.getElementById('salePrice').value = b.salePrice;
             document.getElementById('docStatus').value = b.docStatus;
             document.getElementById('status').value = b.status;
             
             if(b.img) {
-                const preview = document.getElementById('imagePreview');
-                const placeholder = document.getElementById('uploadPlaceholder');
-                preview.src = b.img;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
+                document.getElementById('imagePreview').src = b.img;
+                document.getElementById('imagePreview').classList.remove('hidden');
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
                 document.getElementById('base64Store').value = b.img;
             }
 
@@ -466,162 +474,153 @@
             document.getElementById('customerPhone').value = b.customerPhone || '';
             document.getElementById('sellDate').value = b.sellDate || '';
             document.getElementById('paymentType').value = b.paymentType || 'เงินสด';
+            document.getElementById('depositAmount').value = b.depositAmount || 0;
             
             toggleModal('addModal');
             toggleSaleFields();
         }
 
-        function showReceipt(index) {
-            const b = inventory[index];
+        function deleteBikeById(id) { 
+            if(confirm('ยืนยันการลบข้อมูลคันนี้?')) { 
+                inventory = inventory.filter(b => b.id !== id);
+                save(); 
+            } 
+        }
+
+        function showReceiptById(id) {
+            const b = inventory.find(item => item.id === id);
+            if(!b) return;
+
+            const today = b.sellDate ? new Date(b.sellDate).toLocaleDateString('th-TH') : new Date().toLocaleDateString('th-TH');
+
             document.getElementById('r-id').innerText = b.id;
-            document.getElementById('r-customer').innerText = b.customerName || 'ลูกค้าทั่วไป';
-            document.getElementById('r-phone').innerText = 'ติดต่อ: ' + (b.customerPhone || '-');
-            document.getElementById('r-price').innerText = b.salePrice.toLocaleString();
-            document.getElementById('r-total').innerText = b.salePrice.toLocaleString();
+            document.getElementById('r-date').innerText = today;
+            document.getElementById('r-customer').innerText = b.customerName || '-';
+            document.getElementById('r-phone').innerText = b.customerPhone || '-';
             document.getElementById('r-model').innerText = b.model;
-            document.getElementById('r-plate').innerText = b.plate || '-';
-            document.getElementById('r-payment').innerText = 'ชำระโดย: ' + b.paymentType;
-            document.getElementById('r-date').innerText = b.sellDate ? new Date(b.sellDate).toLocaleDateString('th-TH') : new Date().toLocaleDateString('th-TH');
+            document.getElementById('r-plate').innerText = b.plate;
+            document.getElementById('r-docs').innerText = b.docStatus;
+            document.getElementById('r-payment').innerText = b.paymentType;
             
+            const price = b.salePrice || 0;
+            const deposit = b.depositAmount || 0;
+            const balance = price - deposit;
+
+            document.getElementById('r-price').innerText = price.toLocaleString();
+            
+            const depositRow = document.getElementById('r-deposit-row');
+            if(deposit > 0) {
+                depositRow.classList.remove('hidden');
+                document.getElementById('r-deposit').innerText = deposit.toLocaleString();
+            } else {
+                depositRow.classList.add('hidden');
+            }
+            
+            document.getElementById('r-balance').innerText = balance.toLocaleString();
+
             document.querySelector('main').classList.add('hidden');
             document.querySelector('.header-sticky').classList.add('hidden');
             document.getElementById('receipt-template').classList.remove('hidden');
             window.scrollTo(0, 0);
         }
 
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(inventory));
-            const dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", `tong_motor_backup_${new Date().toISOString().slice(0,10)}.json`);
-            dl.click();
-        }
-
-        function save() {
-            try {
-                localStorage.setItem(DB_KEY, JSON.stringify(inventory));
-                renderCurrentView();
-                updateStats();
-            } catch (e) {
-                alert("⚠️ หน่วยความจำเครื่องเต็ม! ระบบบันทึกรูปภาพขนาดใหญ่ไม่ได้แล้ว แนะนำให้ลบรูปเก่าออกหรือสำรองข้อมูล JSON ไว้ครับ");
-            }
+        function toggleView() {
+            currentMode = currentMode === 'grid' ? 'table' : 'grid';
+            renderCurrentView();
         }
 
         function updateStats() {
-            const available = inventory.filter(b => b.status === 'available').length;
-            const soldCount = inventory.filter(b => b.status === 'sold').length;
-            const docsCount = inventory.filter(b => b.docStatus !== 'ครบ').length;
+            const avail = inventory.filter(b => b.status === 'available').length;
+            const sold = inventory.filter(b => b.status === 'sold').length;
+            const docs = inventory.filter(b => b.docStatus !== 'ชุดโอนครบ').length;
             const profit = inventory.reduce((acc, b) => b.status === 'sold' ? acc + (b.salePrice - b.costPrice) : acc, 0);
-
-            document.getElementById('stat-total').innerText = available;
-            document.getElementById('stat-sold').innerText = soldCount;
-            document.getElementById('stat-docs').innerText = docsCount;
+            
+            document.getElementById('stat-total').innerText = avail;
+            document.getElementById('stat-sold').innerText = sold;
+            document.getElementById('stat-docs').innerText = docs;
             document.getElementById('stat-profit').innerText = "฿" + profit.toLocaleString();
         }
 
-        function renderCurrentView() {
-            if(currentMode === 'grid') renderGrid();
-            else renderTable();
+        function getDocColor(status) {
+            if(status === 'ชุดโอนครบ') return 'bg-green-100 text-green-700';
+            if(status === 'เอกสารไม่ครบ' || status === 'ไม่มีเล่ม') return 'bg-red-100 text-red-700';
+            return 'bg-blue-100 text-blue-700';
         }
 
-        function renderGrid() {
-            const container = document.getElementById('gridView');
+        function renderCurrentView() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const filter = document.getElementById('filterStatus').value;
-            container.innerHTML = '';
+            const filtered = inventory.filter(b => 
+                (b.model.toLowerCase().includes(search) || b.plate.toLowerCase().includes(search)) && 
+                (filter === 'all' || b.status === filter)
+            );
 
-            inventory.forEach((b, index) => {
-                const searchStr = (b.model + b.plate + (b.customerName||'')).toLowerCase();
-                if(!searchStr.includes(search)) return;
-                if(filter !== 'all' && b.status !== filter) return;
-
-                container.innerHTML += `
-                    <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 bike-card flex flex-col h-full">
-                        <div class="h-48 overflow-hidden relative">
+            if(currentMode === 'grid') {
+                document.getElementById('gridView').classList.remove('hidden');
+                document.getElementById('tableView').classList.add('hidden');
+                document.getElementById('gridView').innerHTML = filtered.map((b) => `
+                    <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border bike-card flex flex-col h-full">
+                        <div class="h-40 relative">
                             <img src="${b.img}" class="w-full h-full object-cover">
-                            <div class="absolute top-4 left-4 flex flex-col gap-2">
-                                <span class="text-[9px] font-black px-2 py-1 rounded-lg bg-black/70 text-white backdrop-blur-md uppercase tracking-widest">${b.id}</span>
-                                <span class="text-[9px] font-black px-2 py-1 rounded-lg shadow-lg text-white uppercase ${b.status === 'available' ? 'bg-blue-600' : 'bg-green-600'}">
-                                    ${b.status === 'available' ? 'พร้อมขาย' : 'ขายแล้ว'}
-                                </span>
+                            
+                            <!-- ป้ายสถานะบนรูป (ซ้าย: เอกสาร, ขวา: สถานะขาย) -->
+                            <div class="absolute top-2 left-2 flex gap-1">
+                                <span class="text-[8px] font-bold px-2 py-1 rounded-full shadow-sm ${getDocColor(b.docStatus)} uppercase tracking-tighter">${b.docStatus}</span>
+                            </div>
+                            
+                            <div class="absolute top-2 right-2">
+                                ${b.status === 'sold' 
+                                    ? `<span class="bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg uppercase italic border border-white/20">ขายแล้ว</span>`
+                                    : `<span class="bg-green-500 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg uppercase italic border border-white/20">ยังอยู่</span>`
+                                }
                             </div>
                         </div>
                         <div class="p-5 flex-grow">
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="font-black text-sm uppercase italic tracking-tighter truncate w-3/4">${b.model}</h3>
-                                <span class="text-[9px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${b.docStatus}</span>
-                            </div>
-                            <p class="text-xs text-red-600 font-bold mb-4">${b.plate || 'ยังไม่มีทะเบียน'}</p>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-2xl font-black italic tracking-tighter">฿${b.salePrice.toLocaleString()}</span>
-                               <span class="text-[15px] text-gray-800 font-bold uppercase">  บาท   </span> 
-                            </div>
+                            <h3 class="font-black text-sm uppercase italic truncate">${b.model}</h3>
+                            <p class="text-[10px] text-red-600 font-bold mb-3">${b.plate || '-'}</p>
+                            <p class="text-2xl font-black italic">฿${b.salePrice.toLocaleString()}</p>
                         </div>
-                        <div class="p-3 grid grid-cols-2 gap-2 border-t bg-gray-50/50">
-                            ${b.status === 'sold' 
-                                ? `<button onclick="showReceipt(${index})" class="bg-black text-white py-2.5 rounded-xl text-[10px] font-bold shadow-md hover:bg-gray-800 transition">ออกใบเสร็จ</button>` 
-                                : `<button onclick="editBike(${index})" class="bg-white border-2 border-gray-200 text-gray-700 py-2.5 rounded-xl text-[10px] font-bold hover:bg-gray-100 transition">แก้ไขข้อมูล</button>`
+                        <div class="p-3 grid grid-cols-2 gap-2 border-t bg-gray-50">
+                            <button onclick="editBikeById('${b.id}')" class="bg-white border text-[9px] font-bold py-2 rounded-xl hover:bg-gray-100 transition">แก้ไข</button>
+                            ${b.status === 'sold' ? 
+                                `<button onclick="showReceiptById('${b.id}')" class="bg-black text-white text-[9px] font-bold py-2 rounded-xl hover:bg-gray-800 transition">ใบเสร็จ</button>` : 
+                                `<button onclick="deleteBikeById('${b.id}')" class="text-red-300 text-[9px] hover:text-red-500 transition"><i class="fas fa-trash"></i></button>`
                             }
-                            <div class="flex gap-1">
-                                ${b.status === 'sold' ? `<button onclick="editBike(${index})" class="flex-1 bg-white border text-gray-400 rounded-xl text-[10px]"><i class="fas fa-edit"></i></button>` : ''}
-                                <button onclick="deleteBike(${index})" class="flex-1 bg-red-50 text-red-300 hover:text-red-500 rounded-xl transition"><i class="fas fa-trash-alt text-xs"></i></button>
-                            </div>
                         </div>
                     </div>
-                `;
-            });
-            if(inventory.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-20 text-center"><i class="fas fa-motorcycle text-6xl text-gray-200 mb-4"></i><p class="text-gray-400 font-bold">ยังไม่มีข้อมูลรถในระบบ</p></div>`;
-            }
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const filter = document.getElementById('filterStatus').value;
-            tbody.innerHTML = '';
-
-            inventory.forEach((b, index) => {
-                const searchStr = (b.model + b.plate + (b.customerName||'')).toLowerCase();
-                if(!searchStr.includes(search)) return;
-                if(filter !== 'all' && b.status !== filter) return;
-
-                const profit = b.status === 'sold' ? (b.salePrice - b.costPrice) : 0;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50 transition border-b border-gray-50">
-                        <td class="p-4"><img src="${b.img}" class="w-14 h-10 rounded-lg object-cover shadow-sm"></td>
-                        <td class="p-4 font-black text-xs uppercase italic">
+                `).join('');
+            } else {
+                document.getElementById('gridView').classList.add('hidden');
+                document.getElementById('tableView').classList.remove('hidden');
+                document.getElementById('tableBody').innerHTML = filtered.map((b) => `
+                    <tr class="hover:bg-gray-50 border-b text-[11px]">
+                        <td class="p-3"><img src="${b.img}" class="w-10 h-7 rounded object-cover shadow-sm"></td>
+                        <td class="p-3 font-bold uppercase">
                             ${b.model}
-                            <div class="text-[9px] text-gray-400 font-normal mt-0.5">ID: ${b.id}</div>
-                        </td>
-                        <td class="p-4 text-xs font-bold text-red-600">${b.plate || '-'}</td>
-                        <td class="p-4 text-right font-bold text-xs">฿${b.costPrice.toLocaleString()}</td>
-                        <td class="p-4 text-right font-bold text-xs">฿${b.salePrice.toLocaleString()}</td>
-                        <td class="p-4 text-right font-black text-xs ${profit > 0 ? 'text-green-600' : 'text-gray-300'}">
-                            ${profit > 0 ? '฿' + profit.toLocaleString() : '-'}
-                        </td>
-                        <td class="p-4 text-center text-[10px] font-bold italic">${b.docStatus}</td>
-                        <td class="p-4 text-center">
-                            <span class="px-2 py-1 rounded-md text-[9px] font-black uppercase text-white ${b.status === 'available' ? 'bg-blue-600' : 'bg-green-600'}">
-                                ${b.status === 'available' ? 'STK' : 'SOLD'}
+                            <span class="ml-1 text-[8px] uppercase ${b.status === 'sold' ? 'text-red-600' : 'text-green-600'}">
+                                (${b.status === 'sold' ? 'ขายแล้ว' : 'ยังอยู่'})
                             </span>
                         </td>
-                        <td class="p-4 text-center">
+                        <td class="p-3 text-red-600 font-bold">${b.plate || '-'}</td>
+                        <td class="p-3 text-center text-gray-400 font-bold">${b.receiveDate || '-'}</td>
+                        <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${getDocColor(b.docStatus)}">${b.docStatus}</span></td>
+                        <td class="p-3 text-right text-red-400 font-bold">฿${b.costPrice.toLocaleString()}</td>
+                        <td class="p-3 text-right text-green-600 font-bold">฿${b.salePrice.toLocaleString()}</td>
+                        <td class="p-3 text-center">
                             <div class="flex justify-center gap-3">
-                                <button onclick="editBike(${index})" class="text-blue-500 hover:text-blue-700 transition" title="แก้ไข"><i class="fas fa-edit"></i></button>
-                                ${b.status === 'sold' ? `<button onclick="showReceipt(${index})" class="text-green-600 hover:text-green-800 transition" title="พิมพ์ใบเสร็จ"><i class="fas fa-file-invoice"></i></button>` : ''}
-                                <button onclick="deleteBike(${index})" class="text-red-200 hover:text-red-500 transition" title="ลบ"><i class="fas fa-trash"></i></button>
+                                <button onclick="editBikeById('${b.id}')" title="แก้ไข"><i class="fas fa-edit text-blue-500"></i></button>
+                                ${b.status === 'sold' ? `<button onclick="showReceiptById('${b.id}')" title="ใบเสร็จ"><i class="fas fa-file-invoice text-green-600"></i></button>` : ''}
+                                <button onclick="deleteBikeById('${b.id}')" title="ลบ"><i class="fas fa-trash text-red-200 hover:text-red-500"></i></button>
                             </div>
                         </td>
                     </tr>
-                `;
-            });
+                `).join('');
+            }
         }
 
-        window.onload = () => {
-            updateStats();
-            renderGrid();
+        window.onload = () => { 
+            updateStats(); 
+            renderCurrentView(); 
         };
     </script>
 </body>
